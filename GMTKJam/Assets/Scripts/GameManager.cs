@@ -24,8 +24,8 @@ public class GameManager : MonoBehaviour {
         if (instance == null)
             instance = this;
 
-        if (instance != this)
-            Destroy(this);
+        else if (instance != this)
+            Destroy(gameObject); // this?
 
         // persistent!
         DontDestroyOnLoad(gameObject);
@@ -146,6 +146,20 @@ public class GameManager : MonoBehaviour {
     public void StartAct()
     {
         SceneManager.LoadScene(act + "-" + scene);
+        /*PlayerInMenu[] pIM = FindObjectsOfType<PlayerInMenu>();
+        for(int i = 0; i < pIM.Length; i++)
+        {
+            if (pIM[i] != null)
+            {
+                Destroy(pIM[i]);
+                pIM[i] = null;
+            }
+        }
+
+        Destroy(GameObject.Find("Player In Menu"));*/
+        GameObject pim = GameObject.Find("Player In Menu");
+        if(pim != null)
+            pim.GetComponent<PlayerInMenu>().Explode();
     }
 
     public void SetGasAmount(float amount)
@@ -153,11 +167,15 @@ public class GameManager : MonoBehaviour {
         Image gasBar = GameObject.Find("GasBar").GetComponent<Image>();
         Image gasRing = GameObject.Find("GasRing").GetComponent<Image>();
 
-        gasBar.fillAmount = amount;
-        //gasRing.fillAmount = amount - 1.0f;
-        gasRing.fillAmount = ((amount - 1) / 1.5f) * 1.0f;
+        if (gasBar != null && gasRing != null)
+        {
 
-        GameObject.Find("GasParent").GetComponent<Shake>().enabled = amount >= 2;
+            gasBar.fillAmount = amount;
+            //gasRing.fillAmount = amount - 1.0f;
+            gasRing.fillAmount = ((amount - 1) / 1.5f) * 1.0f;
+
+            GameObject.Find("GasParent").GetComponent<Shake>().enabled = amount >= 2;
+        }
     }
 
     public void AddShake(float duration, string nameOfObject, float intensity)
@@ -165,6 +183,8 @@ public class GameManager : MonoBehaviour {
         GameObject g = GameObject.Find(nameOfObject);
         if(g != null)
         {
+            if (g.GetComponent<Shake>() != null)
+                return;
             g.AddComponent<Shake>();
             g.GetComponent<Shake>().duration = duration;
             g.GetComponent<Shake>().intensity = intensity;

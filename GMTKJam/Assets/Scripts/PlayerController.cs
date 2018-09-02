@@ -22,14 +22,17 @@ public class PlayerController : MonoBehaviour
     float h_input = 0;// Input.GetAxis("Horizontal");
     bool pressJump = false;// Input.GetButtonDown("Jump");
 
+    public GameObject belch;
+
+    public AudioClip goalSound;
+
     // Use this for initialization
     void Start()
     {
     }
 
-    private void FixedUpdate()
+    void HandleGas()
     {
-
         gasAmount += gasRate * Time.deltaTime;
         if (gasAmount > 2.5f)
             Explode();
@@ -43,7 +46,21 @@ public class PlayerController : MonoBehaviour
         //GameObject.Find("arrow").GetComponent<SpriteRenderer>().enabled = gasAmount >= 1.0f;
         GameObject.Find("target").GetComponentInChildren<SpriteRenderer>().enabled = gasAmount >= 1.0f;
         GameObject.Find("target").GetComponent<SpriteRenderer>().enabled = gasAmount >= 1.0f;
-        
+
+        if (CheckIfCrushed())
+            Explode();
+
+        if (CheckForSpike())
+        {
+            Explode();
+        }
+
+        HitByMoving();
+
+    }
+
+    private void FixedUpdate()
+    {
 
         GetInput();
 
@@ -75,10 +92,7 @@ public class PlayerController : MonoBehaviour
         transform.Translate(moveDirection * baseSpeed * Time.deltaTime, Space.World);
         //transform.Translate(moveDirection * Vector2.up);
 
-        if (CheckForSpike())
-        {
-            Explode();
-        }
+        
 
         GameManager.instance.SetGasAmount(gasAmount);
 
@@ -92,6 +106,8 @@ public class PlayerController : MonoBehaviour
 
     void UpdateFloat()
     {
+        HandleGas();
+
         // rotate against mouse
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         //transform.Rotate(Vector3.forward, Vector3.Angle(mousePos, transform.position));
@@ -129,6 +145,8 @@ public class PlayerController : MonoBehaviour
 
     void UpdateFall()
     {
+        HandleGas();
+
         if (CheckForGoal())
         {
             FoundGoal();
@@ -139,6 +157,15 @@ public class PlayerController : MonoBehaviour
         {
             moveDirection.y = 0;
         }*/
+
+        RaycastHit2D check = Physics2D.Raycast(transform.position, moveDirection, groundCheckDistance);
+        if (check.collider != null)
+        {
+            if (check.collider.tag == "Tile")
+            {
+                moveDirection = Vector2.zero;
+            }
+        }
     }
 
     void ExpelGas()
@@ -146,9 +173,21 @@ public class PlayerController : MonoBehaviour
         gasCount -= 1;
         //moveDirection.y = -4;
         moveDirection = -transform.up * 4;
+
+        RaycastHit2D check = Physics2D.Raycast(transform.position, moveDirection, groundCheckDistance);
+        if(check.collider != null)
+        {
+            if(check.collider.tag == "Tile")
+            {
+                moveDirection = Vector2.zero;
+            }
+        }
         GameManager.instance.AddTimer(0.7f, RestoreGas);
         state = PlayerStates.Fall;
         gasAmount = 0.0f;
+
+        Vector2 pos = /*GameObject.Find("target").*/transform.position;
+        GameObject b = Instantiate(belch, pos, Quaternion.Euler(0, 0, 0));
     }
 
     void RestoreGas()
@@ -293,12 +332,14 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Hit a thing");
             if (hit.collider.tag == "Tile")
             {
+                Debug.Log("Tile above");
                 // check below
-                hit = Physics2D.Raycast(transform.position, -Vector3.up, groundCheckDistance);
-                if (hit.collider != null)
+                RaycastHit2D hit2 = Physics2D.Raycast(transform.position, -Vector3.up, groundCheckDistance);
+                if (hit2.collider != null)
                 {
-                    if (hit.collider.tag == "Tile")
+                    if (hit2.collider.tag == "Tile")
                     {
+                        Debug.Log("tile below");
                         return true;
                     }
                 }
@@ -328,6 +369,27 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    void HitByMoving()
+    {
+        RaycastHit2D hitB = Physics2D.Raycast(transform.position, -Vector2.up, groundCheckDistance * 1.5f);
+        if(hitB.collider != null && hitB.collider.GetComponent<MovingPlatform>() != null)
+        {
+            Debug.Log("Hit By Moving Platform");
+            moveDirection = hitB.collider.GetComponent<MovingPlatform>().moveDirection * 5;
+            state = PlayerStates.Fall;
+            gasAmount = 0;
+        }
+
+        RaycastHit2D hitA = Physics2D.Raycast(transform.position, Vector2.up, groundCheckDistance * 1.5f);
+        if (hitA.collider != null && hitA.collider.GetComponent<MovingPlatform>() != null)
+        {
+            Debug.Log("Hit By Moving Platform");
+            moveDirection = hitA.collider.GetComponent<MovingPlatform>().moveDirection * 5;
+            state = PlayerStates.Fall;
+            gasAmount = 0;
+        }
+    }
+
     void FoundGoal()
     {
         GameManager.instance.FinishLevel();
@@ -338,11 +400,16 @@ public class PlayerController : MonoBehaviour
         Animator anim = GetComponent<Animator>();
         anim.SetTrigger("HitGoal");
         //GameManager.instance.AddTimer(1.5f, GameManager.instance.FadeToBlack);
+
+        GetComponent<AudioSource>().clip = goalSound;
+        GetComponent<AudioSource>().Play();
     }
 
     public void Explode()
     {
-        Instantiate(GameManager.instance.explosion, transform.position, Quaternion.Euler(0,0,0));
+        GameObject e = Instantiate(GameManager.instance.explosion, transform.position, Quaternion.Euler(0,0,0));
+        e.GetComponent<Explosion>().player = true;
+
         //Instantiate(GameManager.instance.popped, transform.position, transform.rotation);
         GameManager.instance.AddTimer(3.5f, GameManager.instance.RestartLevel);
         GameManager.instance.AddTimer(.7f, GameManager.instance.FadeToBlack);

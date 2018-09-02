@@ -5,9 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class LevelSelectMenu : MonoBehaviour {
 
+    public AudioClip[] bubbleSounds;
+    AudioSource audioSource;
+
 	// Use this for initialization
 	void Start () {
-		
+        audioSource  = GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -17,6 +20,16 @@ public class LevelSelectMenu : MonoBehaviour {
 
     public void GoToAct1()
     {
+
+        /*GameObject.Find("Player In Menu").transform.position = new Vector3(
+            GameObject.Find("Player In Menu").transform.position.x,
+            GameObject.Find("Player In Menu").transform.position.y,
+            10);*/
+
+        audioSource.clip = bubbleSounds[Random.Range(0, 2)];
+        audioSource.Play();
+        
+
         GameObject.Find("Canvas").GetComponent<Animator>().SetTrigger("back");
         GameManager.instance.act = 1;
         GameManager.instance.scene = 1;
@@ -26,6 +39,14 @@ public class LevelSelectMenu : MonoBehaviour {
 
     public void GoToAct2()
     {
+        /*GameObject.Find("Player In Menu").transform.position = new Vector3(
+                       GameObject.Find("Player In Menu").transform.position.x,
+                       GameObject.Find("Player In Menu").transform.position.y,
+                       10);*/
+
+        audioSource.clip = bubbleSounds[Random.Range(0, 2)];
+        audioSource.Play();
+
         GameObject.Find("Canvas").GetComponent<Animator>().SetTrigger("back");
         GameManager.instance.act = 2;
         GameManager.instance.scene = 1;
@@ -35,6 +56,16 @@ public class LevelSelectMenu : MonoBehaviour {
 
     public void GoToAct3()
     {
+
+        audioSource.clip = bubbleSounds[Random.Range(0, 2)];
+        audioSource.Play();
+
+
+        /*GameObject.Find("Player In Menu").transform.position = new Vector3(
+               GameObject.Find("Player In Menu").transform.position.x,
+               GameObject.Find("Player In Menu").transform.position.y,
+               10);*/
+
         GameObject.Find("Canvas").GetComponent<Animator>().SetTrigger("back");
         GameManager.instance.act = 3;
         GameManager.instance.scene = 1;
@@ -44,6 +75,15 @@ public class LevelSelectMenu : MonoBehaviour {
 
     public void GoToAct4()
     {
+
+        audioSource.clip = bubbleSounds[Random.Range(0, 2)];
+        audioSource.Play();
+
+        /*GameObject.Find("Player In Menu").transform.position = new Vector3(
+            GameObject.Find("Player In Menu").transform.position.x,
+            GameObject.Find("Player In Menu").transform.position.y,
+            10);*/
+
         GameObject.Find("Canvas").GetComponent<Animator>().SetTrigger("back");
         GameManager.instance.act = 4;
         GameManager.instance.scene = 1;
@@ -53,6 +93,15 @@ public class LevelSelectMenu : MonoBehaviour {
 
     public void GoToMainMenu()
     {
+
+        audioSource.clip = bubbleSounds[Random.Range(0, 2)];
+        audioSource.Play();
+
+        /*GameObject.Find("Player In Menu").transform.position = new Vector3(
+            GameObject.Find("Player In Menu").transform.position.x,
+            GameObject.Find("Player In Menu").transform.position.y,
+            10);*/
+
         GameObject.Find("Canvas").GetComponent<Animator>().SetTrigger("back");
         GameManager.instance.act = 1;
         GameManager.instance.scene = 1;

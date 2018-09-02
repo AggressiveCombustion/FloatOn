@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class TitleScreen : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
+    public AudioClip[] bubbleSounds;
+    AudioSource audioSource;
+
+    // Use this for initialization
+    void Start () {
+        audioSource = GetComponent<AudioSource>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -16,6 +19,9 @@ public class TitleScreen : MonoBehaviour {
 
     public void bStart()
     {
+        audioSource.clip = bubbleSounds[Random.Range(0, 2)];
+        audioSource.Play();
+
         GameManager.instance.AddTimer(1f, GameManager.instance.GoToLevelSelect);
 
         GameObject title = GameObject.Find("Title");
@@ -29,6 +35,9 @@ public class TitleScreen : MonoBehaviour {
 
     public void bOptions()
     {
+        audioSource.clip = bubbleSounds[Random.Range(0, 2)];
+        audioSource.Play();
+
         GameManager.instance.AddTimer(1.0f, GameManager.instance.GoToOptions);
 
         GameObject title = GameObject.Find("Title");
@@ -41,6 +50,9 @@ public class TitleScreen : MonoBehaviour {
 
     public void bExitToDesktop()
     {
+        audioSource.clip = bubbleSounds[Random.Range(0, 2)];
+        audioSource.Play();
+
         GameManager.instance.AddTimer(1.0f, GameManager.instance.ExitToDesktop);
 
         GameObject title = GameObject.Find("Title");

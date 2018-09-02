@@ -18,18 +18,19 @@ public class Shake : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        transform.position = startPos;
+        //transform.position = startPos;
 
         if (!constant)
         {
             elapsed += Time.deltaTime;
             if (elapsed >= duration)
             {
+                transform.position = startPos;
                 Destroy(this);
             }
         }
 
-        startPos = transform.position;
+        //startPos = transform.position;
         Vector2 shake = (new Vector2(Random.Range(-1, 1), Random.Range(-1, 1)) / 10) * intensity;
         transform.position = new Vector3(startPos.x + shake.x, startPos.y + shake.y, transform.position.z);
     }

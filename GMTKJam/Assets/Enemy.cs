@@ -14,6 +14,10 @@ public class Enemy : MonoBehaviour {
     bool step2 = false;
     bool step3 = false;
 
+    public GameObject cage;
+
+    public AudioClip spitSound;
+
 	// Use this for initialization
 	void Start () {
 		
@@ -49,7 +53,25 @@ public class Enemy : MonoBehaviour {
             step1 = true;
         }
 
-        
+        GameObject[] cannonballs = GameObject.FindGameObjectsWithTag("Ball");
+        for(int i = 0; i < cannonballs.Length; i++)
+        {
+            /*if(cannonballs[i].GetComponent<Cannonball>().ready = false)
+            {
+                //continue;
+            }*/
+
+            if (cannonballs[i].GetComponent<Cannonball>().ready)
+            {
+                float distance = Vector2.Distance(transform.position, cannonballs[i].transform.position);
+                if(distance < 1f)
+                {
+                    // destroy
+                    cannonballs[i].GetComponent<Cannonball>().Explode();
+                    Dead();
+                }
+            }
+        }
 
 
         
@@ -57,14 +79,14 @@ public class Enemy : MonoBehaviour {
 
     void AimSpitter()
     {
-        Transform player = GameObject.FindGameObjectWithTag("Player").transform;
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null)
             return;
 
-        float distance = Vector2.Distance(player.position, spitter.transform.position);
+        float distance = Vector2.Distance(player.transform.position, spitter.transform.position);
 
-        float angleRad = Mathf.Atan2(player.position.y - spitter.transform.position.y,
-                                     player.position.x - spitter.transform.position.x);
+        float angleRad = Mathf.Atan2(player.transform.position.y - spitter.transform.position.y,
+                                     player.transform.position.x - spitter.transform.position.x);
         float angle = (180 / Mathf.PI) * angleRad;
 
         spitter.transform.rotation = Quaternion.Euler(0, 0, angle + 180);
@@ -75,5 +97,17 @@ public class Enemy : MonoBehaviour {
     {
         GameObject c = Instantiate(cannonball, transform.position, Quaternion.Euler(0, 0, 0));
         c.GetComponent<Cannonball>().owner = gameObject;
+
+        GetComponent<AudioSource>().clip = spitSound;
+        GetComponent<AudioSource>().Play();
+    }
+
+    void Dead()
+    {
+        if(cage != null)
+        {
+            Destroy(cage);
+        }
+        Destroy(gameObject);
     }
 }

@@ -7,6 +7,9 @@ public class Cannonball : MonoBehaviour {
     Vector3 moveDirection;
     public float speed = 1.0f;
 
+    public bool ready = false;
+    public float elapsed = 0.0f;
+
     public GameObject owner;
 
 	// Use this for initialization
@@ -29,6 +32,9 @@ public class Cannonball : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
+        elapsed += Time.deltaTime;
+        if (elapsed > 0.75)
+            ready = true;
 
         transform.Translate(moveDirection * speed * Time.deltaTime, Space.World);
 
@@ -53,18 +59,32 @@ public class Cannonball : MonoBehaviour {
             }
         }
 
-        Transform player = GameObject.Find("Player").transform;
-        if (player == null)
-            return;
-        float distance = Vector2.Distance(transform.position, player.position);
-        if(distance < 1)
+        GameObject player = GameObject.Find("Player");
+        if (player != null)
         {
-            HitPlayer();
-            Explode();
+            float distance = Vector2.Distance(transform.position, player.transform.position);
+            if (distance < 1)
+            {
+                HitPlayer();
+                Explode();
+            }
+        }
+
+        GameObject belch = GameObject.FindGameObjectWithTag("Belch");
+        if (belch != null)
+        {
+            float bDistance = Vector2.Distance(transform.position, belch.transform.position);
+            if (bDistance < 2)
+            {
+                Debug.Log("REFLECT");
+                //moveDirection *= -1;
+                moveDirection = player.transform.up * 5;
+                Destroy(belch);
+            }
         }
     }
 
-    void Explode()
+    public void Explode()
     {
         GameObject e = Instantiate(GameManager.instance.explosion, transform.position, Quaternion.Euler(0,0,0));
         e.GetComponent<SpriteRenderer>().color = GetComponent<SpriteRenderer>().color;
