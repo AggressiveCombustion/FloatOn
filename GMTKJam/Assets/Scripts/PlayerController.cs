@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerLogic : MonoBehaviour {
-    
+public class PlayerController : MonoBehaviour
+{
+
     public float baseSpeed = 1.0f;
     public Vector2 moveDirection = new Vector2();
     public float groundCheckDistance = 0.5f;
 
-    public Transform[] playerSprites = new Transform[2];
+    public Transform[] playerSprites = new Transform[3];
 
-    PlayerStates state = PlayerStates.Float;
+    public PlayerStates state = PlayerStates.Float;
     float gasCount = 1;
+
+    public float gasAmount = 0.0f;
+    public float gasRate = 0.1f;
     bool canExpel = true;
 
     // input variable
@@ -19,82 +23,31 @@ public class PlayerLogic : MonoBehaviour {
     bool pressJump = false;// Input.GetButtonDown("Jump");
 
     // Use this for initialization
-    void Start () {
-	}
-
-    // Update is called once per frame
-    /*void FixedUpdate () {
-
-        if (gasCount > 0)
-            canExpel = true;
-        else
-            canExpel = false;
-
-        if(canExpel)
-        {
-            playerSprites[0].gameObject.SetActive(true);
-            playerSprites[1].gameObject.SetActive(false);
-        }
-
-        else
-        {
-            playerSprites[0].gameObject.SetActive(false);
-            playerSprites[1].gameObject.SetActive(true);
-        }
-
-        float h_input = Input.GetAxis("Horizontal");
-        bool pressJump = Input.GetButtonDown("Jump");
-
-        if(pressJump)
-        {
-            if (gasCount > 0)
-                ExpelGas();
-        }
-
-        if(Physics2D.Raycast(transform.position, Vector2.right * h_input, groundCheckDistance))
-        {
-            h_input = 0;
-        }
-
-        float temp_y = moveDirection.y;
-        temp_y += GameManager.instance.gravity * Time.deltaTime;*/
-
-    /*if (temp_y >= 20)
-        temp_y = 20;*/
-
-    /*if(IsGrounded())
+    void Start()
     {
-        temp_y = 0;
     }
-
-    moveDirection = new Vector2(h_input, temp_y);
-    transform.Translate(moveDirection * baseSpeed * Time.deltaTime);
-}*/
 
     private void FixedUpdate()
     {
+
+        gasAmount += gasRate * Time.deltaTime;
+        if (gasAmount > 2.5f)
+            Explode();
+
+        playerSprites[0].gameObject.SetActive(gasAmount >= 1);
+        if (gasAmount >= .4f)
+            state = PlayerStates.Float;
+        playerSprites[1].gameObject.SetActive(gasAmount <= 0.4f);
+        playerSprites[2].gameObject.SetActive(gasAmount < 1 && gasAmount > 0.4f);
+
+        //GameObject.Find("arrow").GetComponent<SpriteRenderer>().enabled = gasAmount >= 1.0f;
+        GameObject.Find("target").GetComponentInChildren<SpriteRenderer>().enabled = gasAmount >= 1.0f;
+        GameObject.Find("target").GetComponent<SpriteRenderer>().enabled = gasAmount >= 1.0f;
         
-
-        if (gasCount > 0)
-            canExpel = true;
-        else
-            canExpel = false;
-
-        if (canExpel)
-        {
-            playerSprites[0].gameObject.SetActive(true);
-            playerSprites[1].gameObject.SetActive(false);
-        }
-
-        else
-        {
-            playerSprites[0].gameObject.SetActive(false);
-            playerSprites[1].gameObject.SetActive(true);
-        }
 
         GetInput();
 
-        switch(state)
+        switch (state)
         {
             case PlayerStates.Float:
                 UpdateFloat();
@@ -107,47 +60,71 @@ public class PlayerLogic : MonoBehaviour {
                 break;
         }
 
-        //moveDirection = new Vector2(h_input, temp_y);
-        transform.Translate(moveDirection * baseSpeed * Time.deltaTime);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position,
+                                           moveDirection,
+                                           groundCheckDistance);
+        if(hit.collider != null)
+        {
+            if(hit.collider.tag == "Tile")
+            {
+                moveDirection = Vector2.zero;
+            }
+        }
 
-        if(CheckForSpike())
+        //moveDirection = new Vector2(h_input, temp_y);
+        transform.Translate(moveDirection * baseSpeed * Time.deltaTime, Space.World);
+        //transform.Translate(moveDirection * Vector2.up);
+
+        if (CheckForSpike())
         {
             Explode();
         }
-        
+
+        GameManager.instance.SetGasAmount(gasAmount);
+
     }
 
     void GetInput()
     {
-        h_input = Input.GetAxis("Horizontal");
-        pressJump = Input.GetButtonDown("Jump");
-
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.right * h_input, groundCheckDistance);
-        if (hit.collider != null && hit.collider.tag == "Tile")
-        {
-            h_input = 0;
-        }
-
-        moveDirection.x = h_input;
+        pressJump = Input.GetButtonDown("Fire1");
+        
     }
 
     void UpdateFloat()
     {
+        // rotate against mouse
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //transform.Rotate(Vector3.forward, Vector3.Angle(mousePos, transform.position));
+        float distance = Vector2.Distance(mousePos, transform.position);
+
+        float angleRad = Mathf.Atan2(mousePos.y - transform.position.y,
+                                     mousePos.x - transform.position.x);
+        float angle = (180 / Mathf.PI) * angleRad;
+
+        transform.rotation = Quaternion.Euler(0, 0, angle + 270);
+
+        //Debug.Log(mousePos.x);
+
         if (CheckForGoal())
         {
             FoundGoal();
         }
 
+        /*
         moveDirection.y += GameManager.instance.gravity * Time.deltaTime;
         if (IsGrounded())
         {
             moveDirection.y = 0;
-        }
+        }*/
 
-        if (pressJump)
+        moveDirection = Vector2.up * GameManager.instance.gravity;
+
+        if (pressJump && gasAmount >= 1)
         {
             ExpelGas();
         }
+
+        
     }
 
     void UpdateFall()
@@ -157,11 +134,28 @@ public class PlayerLogic : MonoBehaviour {
             FoundGoal();
         }
 
-        moveDirection.y -= GameManager.instance.gravity * Time.deltaTime;
-        if(IsGrounded())
+        /*moveDirection.y -= GameManager.instance.gravity * Time.deltaTime;
+        if (IsGrounded())
         {
             moveDirection.y = 0;
-        }
+        }*/
+    }
+
+    void ExpelGas()
+    {
+        gasCount -= 1;
+        //moveDirection.y = -4;
+        moveDirection = -transform.up * 4;
+        GameManager.instance.AddTimer(0.7f, RestoreGas);
+        state = PlayerStates.Fall;
+        gasAmount = 0.0f;
+    }
+
+    void RestoreGas()
+    {
+        moveDirection.y = 0;
+        state = PlayerStates.Float;
+        gasCount += 1;
     }
 
     void UpdateGoal()
@@ -178,10 +172,10 @@ public class PlayerLogic : MonoBehaviour {
         //Debug.DrawLine(transform.position, transform.position + (Vector3.up * groundCheckDistance), Color.red);
         if (hit.collider != null)
         {
-            Debug.Log("HIT A THING");
+            //Debug.Log("HIT A THING");
             if (hit.transform.tag == "Tile")
             {
-                Debug.Log("HIT A WALL");
+                //Debug.Log("HIT A WALL");
                 return true;
             }
         }
@@ -196,7 +190,7 @@ public class PlayerLogic : MonoBehaviour {
         //Debug.DrawLine(transform.position, transform.position + (Vector3.up * groundCheckDistance), Color.red);
         if (hit.collider != null)
         {
-            if(hit.collider.name == "Goal")
+            if (hit.collider.name == "Goal")
             {
                 return true;
             }
@@ -245,7 +239,7 @@ public class PlayerLogic : MonoBehaviour {
         //Debug.DrawLine(transform.position, transform.position + (Vector3.up * groundCheckDistance), Color.red);
         if (hit.collider != null)
         {
-            Debug.Log("Hit a thing");
+            //Debug.Log("Hit a thing");
             if (hit.collider.tag == "Spike")
             {
                 Debug.Log("POP POP");
@@ -334,21 +328,6 @@ public class PlayerLogic : MonoBehaviour {
         return false;
     }
 
-    void ExpelGas()
-    {
-        gasCount -= 1;
-        moveDirection.y = -4;
-        GameManager.instance.AddTimer(0.7f, RestoreGas);
-        state = PlayerStates.Fall;
-    }
-
-    void RestoreGas()
-    {
-        moveDirection.y = 0;
-        state = PlayerStates.Float;
-        gasCount += 1;
-    }
-
     void FoundGoal()
     {
         GameManager.instance.FinishLevel();
@@ -363,7 +342,7 @@ public class PlayerLogic : MonoBehaviour {
 
     public void Explode()
     {
-        Instantiate(GameManager.instance.explosion, transform.position, transform.rotation);
+        Instantiate(GameManager.instance.explosion, transform.position, Quaternion.Euler(0,0,0));
         //Instantiate(GameManager.instance.popped, transform.position, transform.rotation);
         GameManager.instance.AddTimer(3.5f, GameManager.instance.RestartLevel);
         GameManager.instance.AddTimer(.7f, GameManager.instance.FadeToBlack);

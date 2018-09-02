@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
@@ -126,6 +127,8 @@ public class GameManager : MonoBehaviour {
         instance.act = 1;
         instance.scene = 1;
         SceneManager.LoadScene("LevelSelect");
+
+        
     }
 
     public void GoToOptions()
@@ -138,6 +141,34 @@ public class GameManager : MonoBehaviour {
     public void ExitToDesktop()
     {
         AddTimer(2.0f, Application.Quit);
+    }
+
+    public void StartAct()
+    {
+        SceneManager.LoadScene(act + "-" + scene);
+    }
+
+    public void SetGasAmount(float amount)
+    {
+        Image gasBar = GameObject.Find("GasBar").GetComponent<Image>();
+        Image gasRing = GameObject.Find("GasRing").GetComponent<Image>();
+
+        gasBar.fillAmount = amount;
+        //gasRing.fillAmount = amount - 1.0f;
+        gasRing.fillAmount = ((amount - 1) / 1.5f) * 1.0f;
+
+        GameObject.Find("GasParent").GetComponent<Shake>().enabled = amount >= 2;
+    }
+
+    public void AddShake(float duration, string nameOfObject, float intensity)
+    {
+        GameObject g = GameObject.Find(nameOfObject);
+        if(g != null)
+        {
+            g.AddComponent<Shake>();
+            g.GetComponent<Shake>().duration = duration;
+            g.GetComponent<Shake>().intensity = intensity;
+        }
     }
 }
 
