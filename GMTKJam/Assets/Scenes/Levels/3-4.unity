@@ -113,6 +113,52 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1001 &48904518
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4594136888599092, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4594136888599092, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: -0.032140546
+      objectReference: {fileID: 0}
+    - target: {fileID: 4594136888599092, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 5.078125
+      objectReference: {fileID: 0}
+    - target: {fileID: 4594136888599092, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4594136888599092, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4594136888599092, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4594136888599092, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4594136888599092, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1742994042846278, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &55110122
 GameObject:
   m_ObjectHideFlags: 0
@@ -6838,6 +6884,8 @@ MonoBehaviour:
   cannonball: {fileID: 1436275289406062, guid: ecc9fee35ee01f4429cd9f68ed8fa978, type: 2}
   elapsed: 0
   cage: {fileID: 1110988710}
+  hp: 5
+  spitSound: {fileID: 0}
 --- !u!1 &1766514917
 GameObject:
   m_ObjectHideFlags: 0

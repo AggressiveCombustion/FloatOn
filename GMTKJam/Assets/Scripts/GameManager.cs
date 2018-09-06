@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour {
     public GameObject popped;
     public GameObject explosion;
 
+    bool canLoadLevel = true;
+
 	// Use this for initialization
 	void Start () {
 
@@ -25,7 +27,10 @@ public class GameManager : MonoBehaviour {
             instance = this;
 
         else if (instance != this)
+        {
             Destroy(gameObject); // this?
+            Destroy(this); // this?
+        }
 
         // persistent!
         DontDestroyOnLoad(gameObject);
@@ -74,40 +79,34 @@ public class GameManager : MonoBehaviour {
 
     public void GoToNextLevel()
     {
-        scene += 1;
-        if (scene > 4)
-            act += 1;
+        if (!canLoadLevel)
+            return;
 
-        if(act > 4)
+        canLoadLevel = false;
+        scene += 1;
+        if (scene > 3)
+        {
+            act += 1;
+            scene = 1;
+        }
+
+        if(act == 4 && scene > 1)
         {
             // you beat the game!
+            SceneManager.LoadScene("Final");
+            //act = 1;
+            //scene = 1;
+            return;
         }
 
         SceneManager.LoadScene(act + "-" + scene);
-        /*string levelName = SceneManager.GetActiveScene().name;
-        if (levelName.Length == 3)
-        {
-            int act = name[0];
-            int scene = name[2];
-
-            Debug.Log("Current level is <" + act + "-" + scene + ">");
-
-            int next = name[2] + 1;
-            if (next > 4)
-            {
-                next = 1;
-                act += 1;
-            }
-
-            string nextLevel = act + "-" + next; // 1-4, for instance
-            Debug.Log("Preparing to Load <" + nextLevel + ">");
-            SceneManager.LoadScene(nextLevel);*/
 
     }
 
     public void FadeToBlack()
     {
         GameObject.Find("Fade").GetComponent<Fade>().FadeToBlack();
+        canLoadLevel = true;
     }
 
     public void RestartLevel()

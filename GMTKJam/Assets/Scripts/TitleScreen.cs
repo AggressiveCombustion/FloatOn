@@ -22,7 +22,7 @@ public class TitleScreen : MonoBehaviour {
         audioSource.clip = bubbleSounds[Random.Range(0, 2)];
         audioSource.Play();
 
-        GameManager.instance.AddTimer(1f, GameManager.instance.GoToLevelSelect);
+        GameManager.instance.AddTimer(0.9f, GameManager.instance.GoToLevelSelect);
 
         GameObject title = GameObject.Find("Title");
         if (title != null)
@@ -38,7 +38,7 @@ public class TitleScreen : MonoBehaviour {
         audioSource.clip = bubbleSounds[Random.Range(0, 2)];
         audioSource.Play();
 
-        GameManager.instance.AddTimer(1.0f, GameManager.instance.GoToOptions);
+        GameManager.instance.AddTimer(0.9f, GameManager.instance.GoToOptions);
 
         GameObject title = GameObject.Find("Title");
         if (title != null)
@@ -53,7 +53,7 @@ public class TitleScreen : MonoBehaviour {
         audioSource.clip = bubbleSounds[Random.Range(0, 2)];
         audioSource.Play();
 
-        GameManager.instance.AddTimer(1.0f, GameManager.instance.ExitToDesktop);
+        GameManager.instance.AddTimer(0.9f, GameManager.instance.ExitToDesktop);
 
         GameObject title = GameObject.Find("Title");
         if (title != null)

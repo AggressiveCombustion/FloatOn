@@ -26,9 +26,12 @@ public class PlayerController : MonoBehaviour
 
     public AudioClip goalSound;
 
+    public GameObject pauseMenu;
+
     // Use this for initialization
     void Start()
     {
+        Instantiate(pauseMenu, Vector3.zero, Quaternion.Euler(Vector3.zero));
     }
 
     void HandleGas()

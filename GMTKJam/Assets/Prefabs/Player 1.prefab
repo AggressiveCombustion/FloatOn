@@ -442,6 +442,7 @@ MonoBehaviour:
   gasRate: 0.5
   belch: {fileID: 1493081818027148, guid: fb2f290ecdbd1a548a66df2d499feaff, type: 2}
   goalSound: {fileID: 8300000, guid: a6f41aeefd9693d4d90462d99ed55590, type: 3}
+  pauseMenu: {fileID: 1742994042846278, guid: 7bb8a2f819b464944b368aa4e67ebe9f, type: 2}
 --- !u!212 &212122618675306628
 SpriteRenderer:
   m_ObjectHideFlags: 1

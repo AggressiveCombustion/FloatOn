@@ -100,6 +100,8 @@ public class Boss : MonoBehaviour
 
     void ResetShader()
     {
+        if (GameObject.Find("boss1") == null)
+            return;
         GetComponent<SpriteRenderer>().color = myColor;
     }
 
